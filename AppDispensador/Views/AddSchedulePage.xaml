@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:AppDispensador.ViewModels"
+             x:Class="AppDispensador.Views.AddSchedulePage"
+             BackgroundColor="#121212"
+             Title="Configurar Horario">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="25">
+
+            <Label Text="Hora de dispensado" TextColor="LightGray" FontSize="16" />
+            <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15">
+                <TimePicker Time="{Binding SelectedTime}"
+                            TextColor="White"
+                            FontSize="45"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center" />
+            </Frame>
+
+            <Label Text="Repetir los días" TextColor="LightGray" FontSize="16" />
+            <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Lunes" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsMonday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Martes" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsTuesday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Miércoles" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsWednesday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Jueves" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsThursday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Viernes" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsFriday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Sábado" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsSaturday}" OnColor="#6650a4"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#2C2C2C" />
+
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Domingo" TextColor="White" VerticalOptions="Center" FontSize="16"/>
+                        <Switch Grid.Column="1" IsToggled="{Binding IsSunday}" OnColor="#6650a4"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="Cantidad a servir (gramos)" TextColor="LightGray" FontSize="16" />
+            <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15,5">
+                <Entry Text="{Binding RationGrams}"
+                       Keyboard="Numeric"
+                       TextColor="White"
+                       FontSize="18"
+                       Placeholder="Ej. 100"
+                       PlaceholderColor="Gray"
+                       ClearButtonVisibility="WhileEditing" />
+            </Frame>
+
+            <VerticalStackLayout Spacing="15" Margin="0, 10, 0, 20">
+                <Button Text="Guardar"
+                        Command="{Binding SaveCommand}"
+                        BackgroundColor="#6650a4"
+                        TextColor="White"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        FontSize="18"
+                        FontAttributes="Bold"/>
+
+                <Button Text="Eliminar horario"
+                        Command="{Binding DeleteCommand}"
+                        IsVisible="{Binding IsEditing}"
+                        BackgroundColor="Transparent"
+                        TextColor="#CF6679"
+                        CornerRadius="25"
+                        HeightRequest="50"
+                        FontSize="16"
+                        FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
