@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:AppDispensador.ViewModels"
+             xmlns:models="clr-namespace:AppDispensador.Models"
              x:Class="AppDispensador.Views.MainPage"
              BackgroundColor="#121212"
              Title="Alarmas">
@@ -14,15 +15,56 @@
         </Grid.RowDefinitions>
 
         <HorizontalStackLayout Grid.Row="0" Padding="15" Spacing="10" HorizontalOptions="End">
-            <Ellipse WidthRequest="10" HeightRequest="10" 
-                     Fill="{Binding IsConnected, Converter={StaticResource BoolToColorConverter}}" />
-            <Label Text="{Binding IsConnected, Converter={StaticResource BoolToStatusConverter}}" TextColor="White"/>
+            <Ellipse WidthRequest="10" HeightRequest="10">
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="#CF6679" />
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Ellipse" Binding="{Binding IsConnected}" Value="True">
+                                <Setter Property="Fill" Value="#03DAC6" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+            <Label VerticalOptions="Center">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Text" Value="Desconectado" />
+                        <Setter Property="TextColor" Value="#CF6679" />
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsConnected}" Value="True">
+                                <Setter Property="Text" Value="Conectado" />
+                                <Setter Property="TextColor" Value="#03DAC6" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
         </HorizontalStackLayout>
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Schedules}" Margin="10">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="30" Spacing="10">
+                    <Label Text="No tienes horarios programados." 
+                           TextColor="Gray" 
+                           FontSize="16" 
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Toca + para agregar uno" 
+                           TextColor="Gray" 
+                           FontSize="14" 
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:Schedule">
                     <Frame BackgroundColor="#1E1E1E" CornerRadius="15" Margin="0,5,0,5" Padding="20" BorderColor="Transparent">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:MainViewModel}}, Path=EditScheduleCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -62,6 +104,7 @@
 
             <Button Grid.Column="1" 
                     Text="+" 
+                    Command="{Binding NavigateToAddScheduleCommand}"
                     FontSize="24"
                     BackgroundColor="#8573b0"
                     TextColor="White"
