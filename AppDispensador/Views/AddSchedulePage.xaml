@@ -64,17 +64,6 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <Label Text="Cantidad a servir (gramos)" TextColor="LightGray" FontSize="16" />
-            <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15,5">
-                <Entry Text="{Binding RationGrams}"
-                       Keyboard="Numeric"
-                       TextColor="White"
-                       FontSize="18"
-                       Placeholder="Ej. 100"
-                       PlaceholderColor="Gray"
-                       ClearButtonVisibility="WhileEditing" />
-            </Frame>
-
             <VerticalStackLayout Spacing="15" Margin="0, 10, 0, 20">
                 <Button Text="Guardar"
                         Command="{Binding SaveCommand}"

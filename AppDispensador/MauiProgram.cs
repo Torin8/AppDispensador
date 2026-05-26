@@ -5,59 +5,50 @@ using AppDispensador.Services;
 using AppDispensador.ViewModels;
 using AppDispensador.Views;
 using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
 
-namespace AppDispensador
+namespace AppDispensador;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .UseLocalNotification()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
-            // ==========================================
-            // 1. REGISTRO DE SERVICIOS (Singleton)
-            // ==========================================
-            // Se usa Singleton porque deben mantener su estado global,
-            // conexiones activas o conexiones únicas a la base de datos local.
+        // ==========================================
+        // 1. REGISTRO DE SERVICIOS (Singleton)
+        // ==========================================
+        builder.Services.AddSingleton<DatabaseService>();
+        builder.Services.AddSingleton<IMqttService, MqttService>();
+        builder.Services.AddSingleton<ISchedulerService, SchedulerService>();
 
-            builder.Services.AddSingleton<DatabaseService>();
-            builder.Services.AddSingleton<IMqttService, MqttService>();
+        // CORRECCIÓN: Se especifica el namespace completo para evitar la ambigüedad
+        builder.Services.AddSingleton<AppDispensador.Services.INotificationService, NotificationService>();
 
-            // CORRECCIÓN: Se agrega la clase concreta junto a la interfaz
-            builder.Services.AddSingleton<ISchedulerService, SchedulerService>();
-            builder.Services.AddSingleton<INotificationService, NotificationService>();
+        // ==========================================
+        // 2. REGISTRO DE VIEWMODELS (Transient)
+        // ==========================================
+        builder.Services.AddTransient<MainViewModel>();
+        builder.Services.AddTransient<AddScheduleViewModel>();
 
-            // ==========================================
-            // 2. REGISTRO DE VIEWMODELS (Transient)
-            // ==========================================
-            // Se usa Transient para que se cree una nueva instancia del ViewModel 
-            // cada vez que el usuario navega a la página, limpiando datos residuales.
-
-            builder.Services.AddTransient<MainViewModel>();
-            builder.Services.AddTransient<AddScheduleViewModel>();
-
-            // ==========================================
-            // 3. REGISTRO DE PÁGINAS / VIEWS (Transient)
-            // ==========================================
-            // Es indispensable registrar las páginas con el mismo ciclo de vida 
-            // que sus ViewModels correspondientes para resolver la inyección por constructor.
-
-            builder.Services.AddTransient<MainPage>();
-            builder.Services.AddTransient<AddSchedulePage>();
-
+        // ==========================================
+        // 3. REGISTRO DE PÁGINAS / VIEWS (Transient)
+        // ==========================================
+        builder.Services.AddTransient<MainPage>();
+        builder.Services.AddTransient<AddSchedulePage>();
 
 #if DEBUG
-            builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

@@ -1,29 +1,50 @@
-﻿using System;
+﻿using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
+using AppDispensador.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDispensador.Services
+namespace AppDispensador.Services;
+
+public class NotificationService : AppDispensador.Services.INotificationService
 {
-    public class NotificationService : INotificationService
+    public void ShowNotification(string title, string message, int notificationId = 0)
     {
-        public void ShowNotification(string title, string message, int notificationId = 0)
+        var request = new NotificationRequest
         {
-            // TODO: Implementar notificación local
-            Console.WriteLine($"Notificación [{title}]: {message}");
-        }
+            NotificationId = notificationId,
+            Title = title,
+            Description = message,
+            BadgeNumber = 1,
+            Schedule = { NotifyTime = DateTime.Now }
+        };
 
-        public void ShowCriticalAlert(string title, string message, int notificationId = 1)
-        {
-            // TODO: Implementar notificación de alta prioridad
-            Console.WriteLine($"ALERTA CRÍTICA [{title}]: {message}");
-        }
+        LocalNotificationCenter.Current.Show(request);
+    }
 
-        public void CancelNotification(int notificationId)
+    public void ShowCriticalAlert(string title, string message, int notificationId = 1)
+    {
+        var request = new NotificationRequest
         {
-            // TODO: Implementar cancelación de notificación
-            Console.WriteLine($"Notificación {notificationId} cancelada.");
-        }
+            NotificationId = notificationId,
+            Title = title,
+            Description = message,
+            BadgeNumber = 1,
+            Schedule = { NotifyTime = DateTime.Now },
+            Android = new AndroidOptions
+            {
+                LaunchAppWhenTapped = true,
+                Priority = AndroidPriority.High
+            }
+        };
+
+        LocalNotificationCenter.Current.Show(request);
+    }
+
+    public void CancelNotification(int notificationId)
+    {
+        LocalNotificationCenter.Current.Cancel(notificationId);
     }
 }

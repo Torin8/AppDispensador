@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AppDispensador.Models;
 using AppDispensador.Services;
+using AppDispensador.Config;
 
 namespace AppDispensador.ViewModels;
 
@@ -31,7 +32,23 @@ public partial class MainViewModel : ObservableObject
         };
     }
 
-    // Método encargado de leer los datos reales guardados en SQLite
+    [RelayCommand]
+    public async Task ConnectMqttAsync()
+    {
+        if (!_mqttService.IsConnected)
+        {
+            try
+            {
+                // Vinculación segura desde el archivo externo protegido (.gitignore)
+                await _mqttService.ConnectAsync(AdafruitSettings.Username, AdafruitSettings.AioKey);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error de conexión MQTT: {ex.Message}");
+            }
+        }
+    }
+
     [RelayCommand]
     public async Task LoadSchedulesAsync()
     {
@@ -48,7 +65,8 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsConnected)
         {
-            await _mqttService.PublishAsync("tu_usuario/feeds/dispensador", "1");
+            // Publicación dinámica al FeedTopic seguro sin Hardcodeo expuesto
+            await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
         }
     }
 

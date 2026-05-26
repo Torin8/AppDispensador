@@ -1,11 +1,11 @@
-﻿using AppDispensador.Models;
-using AppDispensador.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using AppDispensador.Models;
+using AppDispensador.Services;
 
 namespace AppDispensador.ViewModels;
 
@@ -21,9 +21,6 @@ public partial class AddScheduleViewModel : ObservableObject
 
     [ObservableProperty]
     private TimeSpan _selectedTime;
-
-    [ObservableProperty]
-    private int _rationGrams;
 
     [ObservableProperty] private bool _isMonday;
     [ObservableProperty] private bool _isTuesday;
@@ -42,7 +39,6 @@ public partial class AddScheduleViewModel : ObservableObject
         _schedulerService = schedulerService;
 
         SelectedTime = DateTime.Now.TimeOfDay;
-        RationGrams = 100;
     }
 
     partial void OnScheduleIdChanged(int value)
@@ -60,7 +56,6 @@ public partial class AddScheduleViewModel : ObservableObject
         if (_currentSchedule != null)
         {
             SelectedTime = _currentSchedule.Time;
-            RationGrams = _currentSchedule.RationGrams;
             ParseActiveDays(_currentSchedule.ActiveDays);
         }
     }
@@ -74,7 +69,7 @@ public partial class AddScheduleViewModel : ObservableObject
         }
 
         _currentSchedule.Time = SelectedTime;
-        _currentSchedule.RationGrams = RationGrams;
+        _currentSchedule.RationGrams = 100; // Valor por defecto del contenedor interno
         _currentSchedule.ActiveDays = FormatActiveDays();
         _currentSchedule.IsActive = true;
 
