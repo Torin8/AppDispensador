@@ -1,15 +1,17 @@
-﻿using AppDispensador.Services;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AppDispensador.Models;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using AppDispensador.Services;
 
 namespace AppDispensador.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
     private readonly IMqttService _mqttService;
+    private readonly DatabaseService _databaseService;
 
     [ObservableProperty]
     private ObservableCollection<Schedule> _schedules;
@@ -17,37 +19,28 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isConnected;
 
-    public MainViewModel(IMqttService mqttService)
+    public MainViewModel(IMqttService mqttService, DatabaseService databaseService)
     {
         _mqttService = mqttService;
+        _databaseService = databaseService;
         Schedules = new ObservableCollection<Schedule>();
 
         _mqttService.OnConnectionStatusChanged += (s, connected) =>
         {
             IsConnected = connected;
         };
-
-        LoadSchedules();
     }
 
-    private void LoadSchedules()
+    // Método encargado de leer los datos reales guardados en SQLite
+    [RelayCommand]
+    public async Task LoadSchedulesAsync()
     {
-        // Datos de prueba para la interfaz
-        Schedules.Add(new Schedule
+        Schedules.Clear();
+        var dbSchedules = await _databaseService.GetSchedulesAsync();
+        foreach (var schedule in dbSchedules)
         {
-            Time = new TimeSpan(5, 0, 0),
-            ActiveDays = "Lun-vie",
-            IsActive = false,
-            RationGrams = 100
-        });
-
-        Schedules.Add(new Schedule
-        {
-            Time = new TimeSpan(6, 0, 0),
-            ActiveDays = "Todos los días",
-            IsActive = true,
-            RationGrams = 150
-        });
+            Schedules.Add(schedule);
+        }
     }
 
     [RelayCommand]
@@ -57,5 +50,18 @@ public partial class MainViewModel : ObservableObject
         {
             await _mqttService.PublishAsync("tu_usuario/feeds/dispensador", "1");
         }
+    }
+
+    [RelayCommand]
+    private async Task NavigateToAddScheduleAsync()
+    {
+        await Shell.Current.GoToAsync("AddSchedulePage");
+    }
+
+    [RelayCommand]
+    private async Task EditScheduleAsync(Schedule schedule)
+    {
+        if (schedule == null) return;
+        await Shell.Current.GoToAsync($"AddSchedulePage?id={schedule.Id}");
     }
 }

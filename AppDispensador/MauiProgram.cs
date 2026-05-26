@@ -20,6 +20,7 @@ namespace AppDispensador
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
             // ==========================================
             // 1. REGISTRO DE SERVICIOS (Singleton)
             // ==========================================
@@ -28,8 +29,10 @@ namespace AppDispensador
 
             builder.Services.AddSingleton<DatabaseService>();
             builder.Services.AddSingleton<IMqttService, MqttService>();
-            builder.Services.AddSingleton<ISchedulerService>();
-            builder.Services.AddSingleton<INotificationService>();
+
+            // CORRECCIÓN: Se agrega la clase concreta junto a la interfaz
+            builder.Services.AddSingleton<ISchedulerService, SchedulerService>();
+            builder.Services.AddSingleton<INotificationService, NotificationService>();
 
             // ==========================================
             // 2. REGISTRO DE VIEWMODELS (Transient)
@@ -49,7 +52,7 @@ namespace AppDispensador
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<AddSchedulePage>();
 
-            
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
