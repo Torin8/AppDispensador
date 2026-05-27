@@ -6,6 +6,9 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
 using AppDispensador.Models;
 using AppDispensador.Services;
+using AppDispensador.Helpers;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace AppDispensador.ViewModels;
 
@@ -69,13 +72,16 @@ public partial class AddScheduleViewModel : ObservableObject
         }
 
         _currentSchedule.Time = SelectedTime;
-        _currentSchedule.RationGrams = 100; // Valor por defecto del contenedor interno
+        _currentSchedule.RationGrams = 100;
         _currentSchedule.ActiveDays = FormatActiveDays();
         _currentSchedule.IsActive = true;
 
         await _databaseService.SaveScheduleAsync(_currentSchedule);
-
         _schedulerService.ScheduleAlarm(_currentSchedule);
+
+        // Muestra el Toast de "tiempo restante" al confirmar el guardado
+        string message = AlarmHelper.GetTimeRemainingMessage(_currentSchedule.Time, _currentSchedule.ActiveDays);
+        await Toast.Make(message, ToastDuration.Long).Show();
 
         await Shell.Current.GoToAsync("..");
     }

@@ -1,8 +1,6 @@
-﻿using AppDispensador.Services;
-using MQTTnet;
+﻿using MQTTnet;
 using MQTTnet.Client;
 using System;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace AppDispensador.Services;
@@ -31,20 +29,23 @@ public class MqttService : IMqttService
 
     public async Task ConnectAsync(string username, string aioKey)
     {
-        var options = new MqttClientOptionsBuilder()
-            .WithClientId(Guid.NewGuid().ToString())
-            .WithTcpServer("io.adafruit.com", 8883)
-            .WithCredentials(username, aioKey)
-            .WithTls(new MqttClientOptionsBuilderTlsParameters
-            {
-                UseTls = true,
-                SslProtocol = SslProtocols.Tls12
-            })
-            .WithCleanSession()
-            .Build();
+        try
+        {
+            var options = new MqttClientOptionsBuilder()
+                .WithClientId(Guid.NewGuid().ToString())
+                .WithTcpServer("io.adafruit.com", 1883) // Puerto 1883 sin TLS para máxima compatibilidad
+                .WithCredentials(username, aioKey)
+                .WithCleanSession()
+                .Build();
 
-        await _mqttClient.ConnectAsync(options);
-        OnConnectionStatusChanged?.Invoke(this, true);
+            await _mqttClient.ConnectAsync(options);
+            OnConnectionStatusChanged?.Invoke(this, true);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error interno MQTT: {ex.Message}");
+            OnConnectionStatusChanged?.Invoke(this, false);
+        }
     }
 
     public async Task DisconnectAsync()

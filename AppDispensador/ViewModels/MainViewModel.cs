@@ -13,6 +13,8 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly IMqttService _mqttService;
     private readonly DatabaseService _databaseService;
+    private readonly INotificationService _notificationService;
+    private readonly ISchedulerService _schedulerService;
 
     [ObservableProperty]
     private ObservableCollection<Schedule> _schedules;
@@ -20,16 +22,26 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isConnected;
 
-    public MainViewModel(IMqttService mqttService, DatabaseService databaseService)
+    public MainViewModel(IMqttService mqttService, DatabaseService databaseService, INotificationService notificationService, ISchedulerService schedulerService)
     {
         _mqttService = mqttService;
         _databaseService = databaseService;
+        _notificationService = notificationService;
+        _schedulerService = schedulerService;
         Schedules = new ObservableCollection<Schedule>();
 
         _mqttService.OnConnectionStatusChanged += (s, connected) =>
         {
             IsConnected = connected;
         };
+    }
+
+    // Nuevo método para actualizar la base de datos y reiniciar los relojes cuando el usuario usa el Switch
+    public async Task UpdateScheduleStatusAsync(Schedule schedule)
+    {
+        await _databaseService.SaveScheduleAsync(schedule);
+        var dbSchedules = await _databaseService.GetSchedulesAsync();
+        _schedulerService.UpdateAlarms(dbSchedules);
     }
 
     [RelayCommand]
@@ -39,7 +51,6 @@ public partial class MainViewModel : ObservableObject
         {
             try
             {
-                // Vinculación segura desde el archivo externo protegido (.gitignore)
                 await _mqttService.ConnectAsync(AdafruitSettings.Username, AdafruitSettings.AioKey);
             }
             catch (Exception ex)
@@ -65,8 +76,8 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsConnected)
         {
-            // Publicación dinámica al FeedTopic seguro sin Hardcodeo expuesto
             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
+            _notificationService.ShowNotification("Dispensador Manual", "Se sirvió la comida con éxito", 999);
         }
     }
 

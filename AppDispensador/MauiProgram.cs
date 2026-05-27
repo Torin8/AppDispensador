@@ -6,6 +6,7 @@ using AppDispensador.ViewModels;
 using AppDispensador.Views;
 using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
+using CommunityToolkit.Maui; // <-- IMPORTANTE
 
 namespace AppDispensador;
 
@@ -17,6 +18,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseLocalNotification()
+            .UseMauiCommunityToolkit() // <-- INICIALIZACIÓN DEL TOOLKIT PARA LOS TOASTS
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -29,8 +31,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<DatabaseService>();
         builder.Services.AddSingleton<IMqttService, MqttService>();
         builder.Services.AddSingleton<ISchedulerService, SchedulerService>();
-
-        // CORRECCIÓN: Se especifica el namespace completo para evitar la ambigüedad
         builder.Services.AddSingleton<AppDispensador.Services.INotificationService, NotificationService>();
 
         // ==========================================

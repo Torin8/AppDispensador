@@ -1,6 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true"></application>
+	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:supportsRtl="true"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCEPT_HANDOVER" />
+	<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_BLOBS_ACROSS_USERS" />
+	<uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+	<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+	<uses-permission android:name="android.permission.ACCESS_SURFACE_FLINGER" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.ACCOUNT_MANAGER" />
+	<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+	<uses-permission android:name="com.android.voicemail.permission.ADD_VOICEMAIL" />
+	<uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.BATTERY_STATS" />
+	<uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_APPWIDGET" />
+	<uses-permission android:name="android.permission.BIND_AUTOFILL_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_CALL_REDIRECTION_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_CARRIER_MESSAGING_CLIENT_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_CARRIER_MESSAGING_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_CARRIER_SERVICES" />
+	<uses-permission android:name="android.permission.BIND_CHOOSER_TARGET_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_PRINT_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_QUICK_ACCESS_WALLET_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE" />
+	<uses-permission android:name="android.permission.BIND_REMOTEVIEWS" />
+	<uses-permission android:name="android.permission.BIND_SCREENING_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_TEXT_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_TV_INPUT" />
+	<uses-permission android:name="android.permission.BIND_TV_INTERACTIVE_APP" />
+	<uses-permission android:name="android.permission.BIND_VISUAL_VOICEMAIL_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_VOICE_INTERACTION" />
+	<uses-permission android:name="android.permission.BIND_VPN_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_VR_LISTENER_SERVICE" />
+	<uses-permission android:name="android.permission.BIND_WALLPAPER" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+	<uses-permission android:name="android.permission.BODY_SENSORS" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.VIBRATE" />
 </manifest>

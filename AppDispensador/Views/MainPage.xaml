@@ -46,14 +46,8 @@
         <CollectionView Grid.Row="1" ItemsSource="{Binding Schedules}" Margin="10">
             <CollectionView.EmptyView>
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="30" Spacing="10">
-                    <Label Text="No tienes horarios programados." 
-                           TextColor="Gray" 
-                           FontSize="16" 
-                           HorizontalTextAlignment="Center" />
-                    <Label Text="Toca + para agregar uno" 
-                           TextColor="Gray" 
-                           FontSize="14" 
-                           HorizontalTextAlignment="Center" />
+                    <Label Text="No tienes horarios programados." TextColor="Gray" FontSize="16" HorizontalTextAlignment="Center" />
+                    <Label Text="Toca + para agregar uno" TextColor="Gray" FontSize="14" HorizontalTextAlignment="Center" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
@@ -84,6 +78,7 @@
 
                             <Switch Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" 
                                     IsToggled="{Binding IsActive}" 
+                                    Toggled="OnAlarmToggled"
                                     OnColor="#6650a4" 
                                     VerticalOptions="Center" />
                         </Grid>
@@ -93,25 +88,8 @@
         </CollectionView>
 
         <Grid Grid.Row="2" Padding="15" ColumnDefinitions="*, Auto">
-            <Button Grid.Column="0" 
-                    Text="Dispensar ahora" 
-                    Command="{Binding DispenseNowCommand}"
-                    BackgroundColor="#6650a4" 
-                    TextColor="White" 
-                    CornerRadius="25"
-                    HeightRequest="50"
-                    Margin="0,0,15,0"/>
-
-            <Button Grid.Column="1" 
-                    Text="+" 
-                    Command="{Binding NavigateToAddScheduleCommand}"
-                    FontSize="24"
-                    BackgroundColor="#8573b0"
-                    TextColor="White"
-                    CornerRadius="25"
-                    WidthRequest="60"
-                    HeightRequest="60"
-                    VerticalOptions="End"/>
+            <Button Grid.Column="0" Text="Dispensar ahora" Command="{Binding DispenseNowCommand}" BackgroundColor="#6650a4" TextColor="White" CornerRadius="25" HeightRequest="50" Margin="0,0,15,0"/>
+            <Button Grid.Column="1" Text="+" Command="{Binding NavigateToAddScheduleCommand}" FontSize="24" BackgroundColor="#8573b0" TextColor="White" CornerRadius="25" WidthRequest="60" HeightRequest="60" VerticalOptions="End"/>
         </Grid>
     </Grid>
 </ContentPage>
