@@ -13,7 +13,6 @@ namespace AppDispensador.Services
         private readonly INotificationService _notificationService;
         private List<Schedule> _activeSchedules = new List<Schedule>();
 
-        // Se especifica la ruta completa explícitamente para evitar la ambigüedad
         private System.Timers.Timer _timer;
         private int _lastTriggeredMinute = -1;
 
@@ -22,7 +21,6 @@ namespace AppDispensador.Services
             _mqttService = mqttService;
             _notificationService = notificationService;
 
-            // Instancia con la ruta completa
             _timer = new System.Timers.Timer(30000);
             _timer.Elapsed += OnTimerElapsed;
             _timer.Start();
@@ -54,35 +52,27 @@ namespace AppDispensador.Services
         {
             var now = DateTime.Now;
 
-            // Evitamos ejecutar múltiples veces en el mismo minuto
             if (now.Minute == _lastTriggeredMinute) return;
             _lastTriggeredMinute = now.Minute;
 
-            // Creamos una copia de la lista para evitar errores si la colección cambia
             var schedulesToProcess = _activeSchedules.ToList();
 
             foreach (var schedule in schedulesToProcess)
             {
-                // Compara la hora actual con la hora del horario guardado
                 if (schedule.Time.Hours == now.Hour && schedule.Time.Minutes == now.Minute)
                 {
-                    // Verifica si el día de la semana coincide
                     if (IsDayActive(schedule.ActiveDays, now.DayOfWeek))
                     {
-                        // 1. Envía la orden al ESP32 vía MQTT
                         if (_mqttService.IsConnected)
                         {
+                            // Únicamente mandamos la orden. La notificación ahora la genera el MqttService al recibir la confirmación de estado
                             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
                         }
-
-                        // 2. Lanza la notificación local
-                        _notificationService.ShowNotification("Dispensador Automático", $"Horario de las {schedule.DisplayTime} ejecutado. Se sirvió la comida.", schedule.Id);
                     }
                 }
             }
         }
 
-        // Traductor de días de la semana
         private bool IsDayActive(string activeDays, DayOfWeek currentDay)
         {
             if (activeDays == "Todos los días") return true;

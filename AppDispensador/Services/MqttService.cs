@@ -12,6 +12,7 @@ public class MqttService : IMqttService
 
     public bool IsConnected => _mqttClient?.IsConnected ?? false;
     public event EventHandler<bool> OnConnectionStatusChanged;
+    public event Action<string, string> OnMessageReceived;
 
     public MqttService()
     {
@@ -21,9 +22,17 @@ public class MqttService : IMqttService
         _mqttClient.DisconnectedAsync += async e =>
         {
             OnConnectionStatusChanged?.Invoke(this, false);
-
             await Task.Delay(TimeSpan.FromSeconds(5));
-            // Lógica de reconexión aquí
+        };
+
+        // Captura e interpreta los mensajes que envía el ESP32
+        _mqttClient.ApplicationMessageReceivedAsync += e =>
+        {
+            var topic = e.ApplicationMessage.Topic;
+            var payload = System.Text.Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
+
+            OnMessageReceived?.Invoke(topic, payload);
+            return Task.CompletedTask;
         };
     }
 
@@ -33,7 +42,7 @@ public class MqttService : IMqttService
         {
             var options = new MqttClientOptionsBuilder()
                 .WithClientId(Guid.NewGuid().ToString())
-                .WithTcpServer("io.adafruit.com", 1883) // Puerto 1883 sin TLS para máxima compatibilidad
+                .WithTcpServer("io.adafruit.com", 1883)
                 .WithCredentials(username, aioKey)
                 .WithCleanSession()
                 .Build();
@@ -66,5 +75,16 @@ public class MqttService : IMqttService
             .Build();
 
         await _mqttClient.PublishAsync(message);
+    }
+
+    public async Task SubscribeAsync(string topic)
+    {
+        if (!IsConnected) return;
+
+        var options = _mqttFactory.CreateSubscribeOptionsBuilder()
+            .WithTopicFilter(f => f.WithTopic(topic))
+            .Build();
+
+        await _mqttClient.SubscribeAsync(options);
     }
 }

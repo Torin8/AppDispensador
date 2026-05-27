@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using AppDispensador.Models;
 using AppDispensador.Services;
 using AppDispensador.Config;
+using Microsoft.Maui.ApplicationModel;
 
 namespace AppDispensador.ViewModels;
 
@@ -30,13 +31,42 @@ public partial class MainViewModel : ObservableObject
         _schedulerService = schedulerService;
         Schedules = new ObservableCollection<Schedule>();
 
-        _mqttService.OnConnectionStatusChanged += (s, connected) =>
+        _mqttService.OnConnectionStatusChanged += async (s, connected) =>
         {
             IsConnected = connected;
+            if (connected)
+            {
+                // Conectar al canal de "escucha" donde el ESP32 enviará el estado
+                await _mqttService.SubscribeAsync($"{AdafruitSettings.Username}/feeds/dispensador-estado");
+            }
+        };
+
+        // Procesar las respuestas que llegan desde el ESP32
+        _mqttService.OnMessageReceived += (topic, payload) =>
+        {
+            if (topic.EndsWith("dispensador-estado"))
+            {
+                // Asegurarse de ejecutar las alertas en el hilo de la interfaz de usuario principal
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    if (payload == "s")
+                    {
+                        string horaActual = DateTime.Now.ToString("hh:mm tt");
+                        _notificationService.ShowNotification("Dispensador", $"Se dispensó la comida a las {horaActual}", 100);
+                    }
+                    else if (payload == "c")
+                    {
+                        _notificationService.ShowNotification("Alerta de Contenedor", "Acción bloqueada: No hay suficiente comida en el contenedor principal.", 101);
+                    }
+                    else if (payload == "p")
+                    {
+                        _notificationService.ShowNotification("Alerta de Plato", "Acción bloqueada: El plato ya tiene comida.", 102);
+                    }
+                });
+            }
         };
     }
 
-    // Nuevo método para actualizar la base de datos y reiniciar los relojes cuando el usuario usa el Switch
     public async Task UpdateScheduleStatusAsync(Schedule schedule)
     {
         await _databaseService.SaveScheduleAsync(schedule);
@@ -76,8 +106,8 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsConnected)
         {
+            // Solo publicamos la orden. La notificación ahora dependerá del string de respuesta del ESP32.
             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
-            _notificationService.ShowNotification("Dispensador Manual", "Se sirvió la comida con éxito", 999);
         }
     }
 
