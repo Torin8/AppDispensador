@@ -1,10 +1,6 @@
-﻿using Plugin.LocalNotification;
+﻿using System;
+using Plugin.LocalNotification;
 using Plugin.LocalNotification.AndroidOption;
-using AppDispensador.Services;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppDispensador.Services;
 
@@ -17,8 +13,8 @@ public class NotificationService : AppDispensador.Services.INotificationService
             NotificationId = notificationId,
             Title = title,
             Description = message,
-            BadgeNumber = 1,
-            Schedule = { NotifyTime = DateTime.Now }
+            BadgeNumber = 1
+            // CORRECCIÓN: Se elimina el bloque 'Schedule' para que se dispare inmediatamente
         };
 
         LocalNotificationCenter.Current.Show(request);
@@ -32,7 +28,6 @@ public class NotificationService : AppDispensador.Services.INotificationService
             Title = title,
             Description = message,
             BadgeNumber = 1,
-            Schedule = { NotifyTime = DateTime.Now },
             Android = new AndroidOptions
             {
                 LaunchAppWhenTapped = true,

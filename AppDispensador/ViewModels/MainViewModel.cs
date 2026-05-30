@@ -23,6 +23,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isConnected;
 
+    // Bandera para rastrear si el ESP32 responde al comando manual
+    private bool _esperandoRespuestaManual;
+
     public MainViewModel(IMqttService mqttService, DatabaseService databaseService, INotificationService notificationService, ISchedulerService schedulerService)
     {
         _mqttService = mqttService;
@@ -36,29 +39,31 @@ public partial class MainViewModel : ObservableObject
             IsConnected = connected;
             if (connected)
             {
-                // Conectar al canal de "escucha" donde el ESP32 enviará el estado
                 await _mqttService.SubscribeAsync($"{AdafruitSettings.Username}/feeds/dispensador-estado");
             }
         };
 
-        // Procesar las respuestas que llegan desde el ESP32
         _mqttService.OnMessageReceived += (topic, payload) =>
         {
-            if (topic.EndsWith("dispensador-estado"))
+            if (topic.EndsWith("dispensador-estado", StringComparison.OrdinalIgnoreCase))
             {
-                // Asegurarse de ejecutar las alertas en el hilo de la interfaz de usuario principal
+                // Se recibió respuesta, cancelamos el timeout de error
+                _esperandoRespuestaManual = false;
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (payload == "s")
+                    string cleanPayload = payload.Trim().ToLower();
+
+                    if (cleanPayload == "s")
                     {
                         string horaActual = DateTime.Now.ToString("hh:mm tt");
                         _notificationService.ShowNotification("Dispensador", $"Se dispensó la comida a las {horaActual}", 100);
                     }
-                    else if (payload == "c")
+                    else if (cleanPayload == "c")
                     {
                         _notificationService.ShowNotification("Alerta de Contenedor", "Acción bloqueada: No hay suficiente comida en el contenedor principal.", 101);
                     }
-                    else if (payload == "p")
+                    else if (cleanPayload == "p")
                     {
                         _notificationService.ShowNotification("Alerta de Plato", "Acción bloqueada: El plato ya tiene comida.", 102);
                     }
@@ -106,8 +111,18 @@ public partial class MainViewModel : ObservableObject
     {
         if (IsConnected)
         {
-            // Solo publicamos la orden. La notificación ahora dependerá del string de respuesta del ESP32.
+            _esperandoRespuestaManual = true;
             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
+
+            // Inicia un temporizador de 10 segundos
+            await Task.Delay(10000);
+
+            // Si después de 10 segundos la bandera sigue activa, el ESP32 no respondió
+            if (_esperandoRespuestaManual)
+            {
+                _esperandoRespuestaManual = false;
+                _notificationService.ShowNotification("Error de Conexión", "Error al dispensar: no se pudo establecer conexión con el dispensador", 103);
+            }
         }
     }
 

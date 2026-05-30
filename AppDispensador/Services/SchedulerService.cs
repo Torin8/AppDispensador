@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using AppDispensador.Models;
 using AppDispensador.Config;
@@ -16,10 +17,22 @@ namespace AppDispensador.Services
         private System.Timers.Timer _timer;
         private int _lastTriggeredMinute = -1;
 
+        // Bandera para rastrear si el ESP32 responde a las alarmas automáticas
+        private bool _esperandoRespuestaAutomatica;
+
         public SchedulerService(IMqttService mqttService, INotificationService notificationService)
         {
             _mqttService = mqttService;
             _notificationService = notificationService;
+
+            // Escuchar también aquí las respuestas para cancelar el timeout automático
+            _mqttService.OnMessageReceived += (topic, payload) =>
+            {
+                if (topic.EndsWith("dispensador-estado", StringComparison.OrdinalIgnoreCase))
+                {
+                    _esperandoRespuestaAutomatica = false;
+                }
+            };
 
             _timer = new System.Timers.Timer(30000);
             _timer.Elapsed += OnTimerElapsed;
@@ -65,8 +78,18 @@ namespace AppDispensador.Services
                     {
                         if (_mqttService.IsConnected)
                         {
-                            // Únicamente mandamos la orden. La notificación ahora la genera el MqttService al recibir la confirmación de estado
+                            _esperandoRespuestaAutomatica = true;
                             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
+
+                            // Inicia un temporizador de 10 segundos
+                            await Task.Delay(10000);
+
+                            // Si después de 10 segundos la bandera sigue activa, el ESP32 está apagado o sin internet
+                            if (_esperandoRespuestaAutomatica)
+                            {
+                                _esperandoRespuestaAutomatica = false;
+                                _notificationService.ShowNotification("Error de Conexión", "Error al dispensar: no se pudo establecer conexión con el dispensador", 103);
+                            }
                         }
                     }
                 }
