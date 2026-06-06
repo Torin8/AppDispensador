@@ -25,6 +25,9 @@ public partial class AddScheduleViewModel : ObservableObject
     [ObservableProperty]
     private TimeSpan _selectedTime;
 
+    [ObservableProperty]
+    private int _rationGrams = 100;
+
     [ObservableProperty] private bool _isMonday;
     [ObservableProperty] private bool _isTuesday;
     [ObservableProperty] private bool _isWednesday;
@@ -59,6 +62,7 @@ public partial class AddScheduleViewModel : ObservableObject
         if (_currentSchedule != null)
         {
             SelectedTime = _currentSchedule.Time;
+            RationGrams = _currentSchedule.RationGrams;
             ParseActiveDays(_currentSchedule.ActiveDays);
         }
     }
@@ -72,7 +76,7 @@ public partial class AddScheduleViewModel : ObservableObject
         }
 
         _currentSchedule.Time = SelectedTime;
-        _currentSchedule.RationGrams = 100;
+        _currentSchedule.RationGrams = RationGrams > 0 ? RationGrams : 100;
         _currentSchedule.ActiveDays = FormatActiveDays();
         _currentSchedule.IsActive = true;
 

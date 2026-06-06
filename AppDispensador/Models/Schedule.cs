@@ -26,5 +26,9 @@ namespace AppDispensador.Models
         // Formato visual para la UI (ej. "05:00")
         [Ignore]
         public string DisplayTime => $"{Time.Hours:D2}:{Time.Minutes:D2}";
+
+        // Formato visual de la ración para la UI (ej. "100 g")
+        [Ignore]
+        public string DisplayGrams => $"{RationGrams} g";
     }
 }

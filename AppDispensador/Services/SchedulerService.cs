@@ -79,6 +79,10 @@ namespace AppDispensador.Services
                         if (_mqttService.IsConnected)
                         {
                             _esperandoRespuestaAutomatica = true;
+
+                            // Envía primero la cantidad de gramos a dispensar al feed dispensador-gramos
+                            await _mqttService.PublishAsync(AdafruitSettings.GramsFeedTopic, schedule.RationGrams.ToString());
+
                             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
 
                             // Inicia un temporizador de 10 segundos

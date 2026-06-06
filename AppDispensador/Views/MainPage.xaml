@@ -67,6 +67,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <Label Grid.Row="0" Grid.Column="0" Text="{Binding ActiveDays}" TextColor="LightGray" FontSize="14" />
@@ -76,7 +77,12 @@
                                 <Label Text="a.m." TextColor="LightGray" FontSize="16" VerticalOptions="End" Margin="0,0,0,8" />
                             </HorizontalStackLayout>
 
-                            <Switch Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" 
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                                <Label Text="Ración:" TextColor="Gray" FontSize="14" VerticalOptions="Center" />
+                                <Label Text="{Binding DisplayGrams}" TextColor="#8573b0" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                            <Switch Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
                                     IsToggled="{Binding IsActive}" 
                                     Toggled="OnAlarmToggled"
                                     OnColor="#6650a4" 

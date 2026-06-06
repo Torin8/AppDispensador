@@ -18,6 +18,22 @@
                             HorizontalOptions="Center" />
             </Frame>
 
+            <Label Text="Cantidad a dispensar (gramos)" TextColor="LightGray" FontSize="16" />
+            <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Entry Grid.Column="0"
+                           Text="{Binding RationGrams}"
+                           Keyboard="Numeric"
+                           TextColor="White"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           Placeholder="100"
+                           PlaceholderColor="Gray"
+                           VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="g" TextColor="LightGray" FontSize="20" VerticalOptions="Center" />
+                </Grid>
+            </Frame>
+
             <Label Text="Repetir los días" TextColor="LightGray" FontSize="16" />
             <Frame BackgroundColor="#1E1E1E" BorderColor="Transparent" CornerRadius="10" Padding="15">
                 <VerticalStackLayout Spacing="10">
