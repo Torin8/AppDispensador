@@ -112,12 +112,13 @@ public partial class MainViewModel : ObservableObject
         if (IsConnected)
         {
             _esperandoRespuestaManual = true;
-            await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
+            // "2" indica dispensado manual; el horario programado envía "1"
+            await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "2");
 
-            // Inicia un temporizador de 10 segundos
-            await Task.Delay(10000);
+            // Inicia un temporizador de 20 segundos
+            await Task.Delay(20000);
 
-            // Si después de 10 segundos la bandera sigue activa, el ESP32 no respondió
+            // Si después de 20 segundos la bandera sigue activa, el ESP32 no respondió
             if (_esperandoRespuestaManual)
             {
                 _esperandoRespuestaManual = false;

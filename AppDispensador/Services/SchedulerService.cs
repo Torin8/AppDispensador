@@ -85,10 +85,10 @@ namespace AppDispensador.Services
 
                             await _mqttService.PublishAsync(AdafruitSettings.FeedTopic, "1");
 
-                            // Inicia un temporizador de 10 segundos
-                            await Task.Delay(10000);
+                            // Inicia un temporizador de 20 segundos
+                            await Task.Delay(20000);
 
-                            // Si después de 10 segundos la bandera sigue activa, el ESP32 está apagado o sin internet
+                            // Si después de 20 segundos la bandera sigue activa, el ESP32 está apagado o sin internet
                             if (_esperandoRespuestaAutomatica)
                             {
                                 _esperandoRespuestaAutomatica = false;
